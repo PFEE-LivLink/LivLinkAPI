@@ -24,7 +24,20 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/pfee-livlink/livlinkapitest:latest .
-          
+
       - name: Push Docker image
         run: |
           docker push ghcr.io/pfee-livlink/livlinkapitest:latest
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: write ssh key to file
+        run: |
+          echo "${{ secrets.MASTER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
+      - name: Login to GHCR Docker
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_AT }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${{ MASTER_SSH_USER }}@${{ MASTER_HOST }}" "echo $GHCR_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
