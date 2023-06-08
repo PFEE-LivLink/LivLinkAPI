@@ -39,5 +39,7 @@ jobs:
       - name: Login to GHCR Docker
         env:
           GHCR_TOKEN: ${{ secrets.GHCR_AT }}
+          MASTER_SSH_USER: ${{ secrets.MASTER_SSH_USER }}
+          MASTER_HOST: ${{ secrets.MASTER_HOST }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${{ MASTER_SSH_USER }}@${{ MASTER_HOST }}" "echo $GHCR_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${MASTER_SSH_USER}@${MASTER_HOST}" "echo $GHCR_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
