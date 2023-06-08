@@ -15,9 +15,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
+      - name: Check GHCR_ACCESS_TOKEN secret
+        run: |
+          if [[ -z "${{ secrets.GHCR_AT }}" ]]; then
+            echo "Error: GHCR_ACCESS_TOKEN secret is not set or empty."
+            exit 1
+          else
+            echo "GHCR_ACCESS_TOKEN secret is set."
+          fi
+
       - name: Login to Docker GHCR
         env:
-          GHCR_TOKEN: ${{ secrets.GHCR_ACCESS_TOKEN }}
+          GHCR_TOKEN: ${{ secrets.GHCR_AT }}
         run: |
           echo $GHCR_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
