@@ -31,6 +31,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-publish
+    env:
+      GHCR_TOKEN: ${{ secrets.GHCR_AT }}
+      MASTER_SSH_USER: ${{ secrets.MASTER_SSH_USER }}
+      MASTER_HOST: ${{ secrets.MASTER_HOST }}
 
     steps:
       - name: write ssh key to file
@@ -38,12 +42,8 @@ jobs:
           echo "${{ secrets.MASTER_SSH_KEY }}" > id_rsa
           chmod 400 id_rsa
       - name: Login to GHCR Docker
-        env:
-          GHCR_TOKEN: ${{ secrets.GHCR_AT }}
-          MASTER_SSH_USER: ${{ secrets.MASTER_SSH_USER }}
-          MASTER_HOST: ${{ secrets.MASTER_HOST }}
         run: |
           ssh -o StrictHostKeyChecking=no -i id_rsa "${MASTER_SSH_USER}@${MASTER_HOST}" "echo $GHCR_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
       - name: Download and run image
         run: |
-          ssh -o StrictHostKeyChecking=no -i id_rsa "${MASTER_SSH_USER}@${MASTER_HOST}" "echo Hello"
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${MASTER_SSH_USER}@${MASTER_HOST}" "docker run -d --name livlinkapitest ghcr.io/pfee-livlink/livlinkapitest:latest"
