@@ -30,6 +30,7 @@ jobs:
           docker push ghcr.io/pfee-livlink/livlinkapitest:latest
   deploy:
     runs-on: ubuntu-latest
+    needs: build-and-publish
 
     steps:
       - name: write ssh key to file
@@ -43,3 +44,8 @@ jobs:
           MASTER_HOST: ${{ secrets.MASTER_HOST }}
         run: |
           ssh -o StrictHostKeyChecking=no -i id_rsa "${MASTER_SSH_USER}@${MASTER_HOST}" "echo $GHCR_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
+      - name: Download and run image
+        run: |
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${MASTER_SSH_USER}@${MASTER_HOST}" "
+            docker run -d --name livlinkapitest ghcr.io/pfee-livlink/livlinkapitest:latest
+          "
