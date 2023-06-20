@@ -1,4 +1,4 @@
-const { leaf, runner, branch } = require('scriptease-cli');
+import { branch, leaf, runner } from 'scriptease-cli';
 
 leaf('test', async () => {
   await runner.npxExec('jest', [], [{ option: '--passWithNoTests' }]);
