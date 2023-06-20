@@ -15,3 +15,12 @@ branch('test', () => {
     await runner.npxExec('jest', [], [{ option: '--config', value: './test/jest-e2e.json' }]);
   });
 });
+
+branch('coveralls', () => {
+  leaf('send', async () => {
+    if (process.env.COVERALLS_REPO_TOKEN === undefined) {
+      throw new Error('COVERALLS_REPO_TOKEN is not defined');
+    }
+    await runner.exec('cat ./coverage/lcov.info | npx coveralls');
+  });
+});
