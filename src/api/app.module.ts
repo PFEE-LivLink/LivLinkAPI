@@ -23,7 +23,7 @@ export class AppModule {
     return {
       global: true,
       module: AppModule,
-      imports: [MongooseModule.forRoot(mongoUri, {})],
+      imports: [MongooseModule.forRoot(mongoUri)],
       controllers: [],
       providers: [
         {
