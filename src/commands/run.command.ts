@@ -21,7 +21,7 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     const app = await NestFactory.create(AppModule.forModule(options));
 
     await app.listen(options.port, () => {
-      this.logger.log(`Server started on port ${options.port}`);
+      this.logger.log(`Server started on port ${options.port} on '${options.env}' environment`);
     });
   }
 
