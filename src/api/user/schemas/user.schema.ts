@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 import { Prop, Schema } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import SchemaFactoryCustom from 'src/database/custom.schema.factory';
+import SchemaFactoryCustom from 'src/api/database/custom.schema.factory';
 
 export type UserDocument = User & mongoose.Document;
 
-enum UserType {
-  Helper = 'helper',
-  Dependent = 'dependent',
-}
+export const userType = {
+  Dependent: 'Dependent',
+  Helper: 'Helper',
+} as const;
 
 class UserMethods {
   isDependent(this: User): boolean {
-    return this.type === UserType.Dependent;
+    return this.type === userType.Dependent;
   }
 
   isHelper(this: User): boolean {
-    return this.type === UserType.Helper;
+    return this.type === userType.Helper;
   }
 }
 
@@ -30,8 +30,8 @@ export class User extends UserMethods {
   @Prop({ type: String, required: true })
   passwordHash: string;
 
-  @Prop()
-  type: UserType;
+  @Prop({ type: String, required: true, enum: Object.values(userType) })
+  type: (typeof userType)[keyof typeof userType];
 
   @Prop({ type: String, required: true })
   firstName: string;
