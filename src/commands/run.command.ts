@@ -2,10 +2,12 @@ import { Command, Option } from 'nest-commander';
 import { CommandRunnerWithNestLogger } from './utils/command-runner-nest-logger.interface';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/api/app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 export interface RunCommandOptions {
   port: number;
   env: string;
+  jwtSecret: string;
 }
 
 @Command({ name: 'run', description: 'run the API' })
@@ -19,6 +21,8 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     this.logger.debug(`Running with options: \n${JSON.stringify(options, null, 2)}`);
 
     const app = await NestFactory.create(AppModule.forModule(options));
+
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
     await app.listen(options.port, () => {
       this.logger.log(`Server started on port ${options.port} on '${options.env}' environment`);
@@ -44,5 +48,14 @@ export class RunCommand extends CommandRunnerWithNestLogger {
   })
   parseEnv(env: string): string {
     return env;
+  }
+
+  @Option({
+    flags: '--jwt-secret <jwtSecret>',
+    required: false,
+    env: 'JWT_SECRET',
+  })
+  parseJwtSecret(jwtSecret: string): string {
+    return jwtSecret;
   }
 }

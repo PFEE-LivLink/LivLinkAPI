@@ -3,6 +3,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RunOptions } from 'src/constants';
 import { MongoServerMemory } from './database/mongoServerMemory';
 import { RunCommandOptions } from 'src/commands/run.command';
+import { AuthModule } from './auth/auth.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ValidationInterceptor } from './validation.interceptor';
 
 @Module({})
 export class AppModule {
@@ -23,14 +26,19 @@ export class AppModule {
     return {
       global: true,
       module: AppModule,
-      imports: [MongooseModule.forRoot(mongoUri)],
+      imports: [MongooseModule.forRoot(mongoUri), AuthModule],
       controllers: [],
       providers: [
         {
           provide: RunOptions,
           useValue: options ?? {},
         },
+        {
+          provide: APP_INTERCEPTOR,
+          useClass: ValidationInterceptor,
+        },
       ],
+      exports: [RunOptions],
     };
   }
 }

@@ -19,14 +19,14 @@ export default abstract class EntityRepository<T extends Document> {
     return await this.EntityModel.find(entityFilterQuery).exec();
   }
 
-  public async create(createEntityData: unknown): Promise<T> {
+  public async create(createEntityData: Partial<T>): Promise<T> {
     const entity = new this.EntityModel(createEntityData);
     return await this.save(entity);
   }
 
   public async findOneAndUpdate(
     entityFilterQuery: FilterQuery<T>,
-    updateEntityData: UpdateQuery<unknown>,
+    updateEntityData: UpdateQuery<Partial<T>>,
   ): Promise<T | null> {
     return await this.EntityModel.findOneAndUpdate(entityFilterQuery, updateEntityData, { new: true }).exec();
   }

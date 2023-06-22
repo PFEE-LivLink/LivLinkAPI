@@ -10,6 +10,8 @@ export const userType = {
   Helper: 'Helper',
 } as const;
 
+export type UserType = (typeof userType)[keyof typeof userType];
+
 class UserMethods {
   isDependent(this: User): boolean {
     return this.type === userType.Dependent;
@@ -24,14 +26,14 @@ class UserMethods {
 export class User extends UserMethods {
   _id: string;
 
-  @Prop({ type: String, required: true, unique: true, match: /^(\+33 )[1-9](\d\d){4}$/ })
+  @Prop({ type: String, required: true, unique: true, match: /^(\+33 )[1-9]( \d\d){4}$/ })
   phone: string;
 
   @Prop({ type: String, required: true })
   passwordHash: string;
 
   @Prop({ type: String, required: true, enum: Object.values(userType) })
-  type: (typeof userType)[keyof typeof userType];
+  type: UserType;
 
   @Prop({ type: String, required: true })
   firstName: string;
