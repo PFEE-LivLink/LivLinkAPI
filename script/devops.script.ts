@@ -1,4 +1,4 @@
-const { leaf, branch, runner } = require('scriptease-cli');
+import { branch, leaf, runner } from 'scriptease-cli';
 
 branch('db', () => {
   branch('dev', () => {

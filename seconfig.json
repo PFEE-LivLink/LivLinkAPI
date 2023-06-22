@@ -1,3 +1,4 @@
 {
-  "directories": ["script"]
+  "directories": ["script"],
+  "require": ["ts-node/register"]
 }
