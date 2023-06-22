@@ -14,6 +14,7 @@ describe('AppController (e2e)', () => {
       imports: [
         AppModule.forModule({
           env: 'test',
+          jwtSecret: 'jwtSecret',
         }),
       ],
     }).compile();
