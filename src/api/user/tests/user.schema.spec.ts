@@ -76,7 +76,7 @@ describe('UserSchema', () => {
     }
 
     // check if a non french phone number is accepted
-    basicUserStub.phone = '+34 666666666';
+    basicUserStub.phone = '+34 6 66 66 66 66';
     try {
       await UserModel.create(basicUserStub);
       fail('Expected validation error to be thrown');
@@ -85,8 +85,8 @@ describe('UserSchema', () => {
       expect(error.name).toBe('ValidationError');
     }
 
-    // check with spaces in phone number
-    basicUserStub.phone = '+34 6 66 66 66 66';
+    // check with no spaces in phone number
+    basicUserStub.phone = '+33666666666';
     try {
       await UserModel.create(basicUserStub);
       fail('Expected validation error to be thrown');

@@ -3,7 +3,7 @@ import { User } from '../schemas/user.schema';
 
 export const BASIC_USER_RAW = (): AnyKeys<User> => {
   return {
-    phone: '+33 666666666',
+    phone: '+33 6 66 66 66 66',
     type: 'Dependent',
     firstName: 'John',
     lastName: 'Doe',
