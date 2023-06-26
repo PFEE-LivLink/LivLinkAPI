@@ -29,8 +29,8 @@ export class AuthService {
     const newUser = await this.userRepository.create({
       phone: registerDTO.phone,
       passwordHash: hashedPassword,
-      firstName: registerDTO.firstName,
-      lastName: registerDTO.lastName,
+      firstName: registerDTO.first_name,
+      lastName: registerDTO.last_name,
       type: registerDTO.type,
     });
 

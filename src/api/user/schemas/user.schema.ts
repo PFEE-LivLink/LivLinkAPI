@@ -2,6 +2,7 @@
 import { Prop, Schema } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import SchemaFactoryCustom from 'src/api/database/custom.schema.factory';
+import { FrenchPhoneRegex } from 'src/constants';
 
 export type UserDocument = User & mongoose.Document;
 
@@ -26,7 +27,7 @@ class UserMethods {
 export class User extends UserMethods {
   _id: string;
 
-  @Prop({ type: String, required: true, unique: true, match: /^(\+33 )[1-9]( \d\d){4}$/ })
+  @Prop({ type: String, required: true, unique: true, match: FrenchPhoneRegex })
   phone: string;
 
   @Prop({ type: String, required: true })
@@ -40,6 +41,12 @@ export class User extends UserMethods {
 
   @Prop({ type: String, required: true })
   lastName: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: User.name }], default: [] })
+  dependentsFollowed: User[];
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: User.name }], default: [] })
+  helperFollowers: User[];
 }
 
 export const UserSchema = SchemaFactoryCustom.createForClass(User, UserMethods);

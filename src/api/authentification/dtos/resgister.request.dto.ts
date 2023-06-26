@@ -13,10 +13,11 @@ export class RegisterRequestDTO {
 
   @IsString()
   @IsNotEmpty()
-  public firstName: string;
+  public first_name: string;
 
   @IsString()
-  public lastName: string;
+  @IsNotEmpty()
+  public last_name: string;
 
   @IsEnum(userType)
   public type: UserType;

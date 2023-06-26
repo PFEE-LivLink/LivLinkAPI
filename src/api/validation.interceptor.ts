@@ -9,6 +9,10 @@ export class ValidationInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const dtoResponse = await lastValueFrom(next.handle());
 
+    if (dtoResponse === undefined) {
+      return dtoResponse;
+    }
+
     const errors = await validate(dtoResponse);
 
     if (errors.length > 0) {
