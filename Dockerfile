@@ -14,4 +14,4 @@ RUN npm install
 COPY . .
 
 # Start the application
-CMD ["npx", "nest", "start", "-d", "--", "run"]
+CMD ["npx", "nest", "start", "-d", "--", "run", "--genDocs", "true"]
