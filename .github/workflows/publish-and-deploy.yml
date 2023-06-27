@@ -72,7 +72,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" \
             "docker run -d --name ${{github.repository}} \
-            -p ${{PORT}}:${{PORT}} \
-            -e PORT=${{PORT}} \
+            -p ${PORT}:${PORT} \
+            -e PORT=${PORT} \
             --env-file ${ENV_PATH} \
             ghcr.io/${ORG}/${REPO}:latest"
