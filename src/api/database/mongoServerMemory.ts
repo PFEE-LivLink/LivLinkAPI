@@ -25,9 +25,12 @@ export class MongoServerMemory {
   }
 
   public static async stop(): Promise<void> {
-    await mongoConnectionMemory.dropDatabase();
-    await mongoConnectionMemory.close();
-    await mongodMemory.stop();
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (mongodMemory) {
+      await mongoConnectionMemory.dropDatabase();
+      await mongoConnectionMemory.close();
+      await mongodMemory.stop();
+    }
   }
 
   public static getMongoConnection(): Connection {
