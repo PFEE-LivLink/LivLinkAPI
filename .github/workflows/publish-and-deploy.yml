@@ -36,6 +36,7 @@ jobs:
 
       - name: Push Docker image
         run: |
+          docker push ghcr.io/${ORG}/${REPO}:${{ github.ref }}
           docker push ghcr.io/${ORG}/${REPO}:latest
   deploy:
     runs-on: ubuntu-latest
@@ -61,18 +62,10 @@ jobs:
           chmod 400 id_rsa
       - name: Login to GHCR Docker
         run: |
-          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "echo $GITHUB_TOKEN | docker login ghcr.io \ 
-          -u ${{ github.repository_owner }} --password-stdin"
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
       - name: Remove old image and container
         run: |
-          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" \
-          "docker rm -f ${{github.repository}} || true \
-          && docker rmi ghcr.io/${ORG}/${REPO}:latest || true"
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "docker rm -f ${{github.repository}} || true && docker rmi ghcr.io/${ORG}/${REPO}:latest || true"
       - name: Download and run image
         run: |
-          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" \
-            "docker run -d --name ${{github.repository}} \
-            -p ${PORT}:${PORT} \
-            -e PORT=${PORT} \
-            --env-file ${ENV_PATH} \
-            ghcr.io/${ORG}/${REPO}:latest"
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "docker run -d --name ${{github.repository}} -p ${PORT}:${PORT} -e PORT=${PORT} --env-file ${ENV_PATH} ghcr.io/${ORG}/${REPO}:latest"
