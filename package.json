@@ -24,7 +24,11 @@
     "test:watch": "se run test:watch",
     "test:cov": "se run test:cov",
     "test:e2e": "se run test:e2e",
-    "coveralls:send": "se run coveralls:send"
+    "coveralls:send": "se run coveralls:send",
+    "tag:release": "se run tag:release",
+    "doc:generate": "se run doc:generate",
+    "doc:generate:redoc": "se run doc:generate:redoc",
+    "doc:generate:open-api-yml": "se run doc:generate:open-api-yml"
   },
   "dependencies": {
     "@juicyllama/nestjs-redoc": "^2.3.10",
