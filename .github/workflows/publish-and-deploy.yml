@@ -36,7 +36,6 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${ORG}/${REPO}:${{ github.ref }}
           docker push ghcr.io/${ORG}/${REPO}:latest
   deploy:
     runs-on: ubuntu-latest
