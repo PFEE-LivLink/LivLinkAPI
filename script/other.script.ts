@@ -31,6 +31,6 @@ branch('tag', () => {
     const packageJson = readFileSync('package.json', 'utf8');
     const data = JSON.parse(packageJson);
     const version = (data.version as string) ?? 'UNDEFINED';
-    await runner.npxExec('git', ['tag', `v${version}`]);
+    await runner.exec(`git tag v${version}`);
   });
 });
