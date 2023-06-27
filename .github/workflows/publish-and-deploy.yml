@@ -32,11 +32,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${ORG}/${REPO}:latest .
+          docker build -t ghcr.io/${REPO}:latest .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${ORG}/${REPO}:latest
+          docker push ghcr.io/${REPO}:latest
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-publish
@@ -64,7 +64,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
       - name: Remove old image and container
         run: |
-          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "docker rm -f ${{github.repository}} || true && docker rmi ghcr.io/${ORG}/${REPO}:latest || true"
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "docker rm -f livLinkApi || true && docker rmi ghcr.io/${REPO}:latest || true"
       - name: Download and run image
         run: |
-          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "docker run -d --name ${{github.repository}} -p ${PORT}:${PORT} -e PORT=${PORT} --env-file ${ENV_PATH} ghcr.io/${ORG}/${REPO}:latest"
+          ssh -o StrictHostKeyChecking=no -i id_rsa "${SSH_USER}@${HOST}" "docker run -d --name livLinkApi -p ${PORT}:${PORT} -e PORT=${PORT} --env-file ${ENV_PATH} ghcr.io/${REPO}:latest"
