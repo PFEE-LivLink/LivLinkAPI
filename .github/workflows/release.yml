@@ -22,7 +22,7 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-      - run: npm run docs:generate
+      - run: npm run doc:generate
       - run: npm pack
       - uses: 'marvinpinto/action-automatic-releases@latest'
         with:
