@@ -1,0 +1,238 @@
+openapi: 3.0.0
+paths:
+  /auth/register:
+    post:
+      operationId: AuthController_register
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestDTO'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_0
+        - auth
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /helper/circles/requests:
+    get:
+      operationId: CircleHelperController_getRequests
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_1
+        - Helper Circles
+  /helper/circles/requests/{requestId}/accept:
+    post:
+      operationId: CircleHelperController_acceptRequest
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
+  /helper/circles/requests/{requestId}/refuse:
+    post:
+      operationId: CircleHelperController_refuseRequest
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
+  /helper/circles:
+    get:
+      operationId: CircleHelperController_getMyConnections
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /helper/circles/revoke:
+    delete:
+      operationId: CircleHelperController_revokeMyConnection
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /dependent/circles:
+    get:
+      operationId: CircleDependentController_getPeopleInMyCircles
+      summary: Get all people in my circles
+      description: You can filter by circle type.
+      parameters:
+        - name: circle_type
+          required: false
+          in: query
+          schema:
+            enum:
+              - high
+              - medium
+              - low
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeopleCircleResponseDto'
+        '401': &ref_2
+          description: Unauthorized
+        '403': &ref_3
+          description: You are not a dependent
+      tags: &ref_4
+        - Dependent Circles
+  /dependent/circles/requests:
+    get:
+      operationId: CircleDependentController_getMyRequests
+      summary: Get all my requests
+      description: >-
+        By default this will also display the requests that have been rejected.
+        You can filter by circle type and status.
+      parameters:
+        - name: circle_type
+          required: false
+          in: query
+          schema:
+            enum:
+              - high
+              - medium
+              - low
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            enum:
+              - pending
+              - rejected
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeopleCircleResponseDto'
+        '401': *ref_2
+        '403': *ref_3
+      tags: *ref_4
+    post:
+      operationId: CircleDependentController_sendRequestToAddInCircle
+      summary: Send a request to add a person in my circles
+      description: |-
+        This endpoint retrieves a list of users in the system.
+        **Markdown Example:**
+        - First item
+        - Second item
+        - Third item
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendCircleRequestRequestDto'
+      responses:
+        '201':
+          description: ''
+        '401': *ref_2
+        '403': *ref_3
+      tags: *ref_4
+info:
+  title: LivLink API
+  description: TODO description
+  version: 0.0.1
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    RegisterRequestDTO:
+      type: object
+      properties: {}
+    LoginRequestDTO:
+      type: object
+      properties: {}
+    PersonPayloadDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - register
+            - unknown
+        user_id:
+          type: string
+          description: will be defined if 'type' is set to register
+        phone:
+          type: string
+          description: will be defined if 'type' is set to unknown
+      required:
+        - type
+    PersonCircleDto:
+      type: object
+      properties:
+        id:
+          type: string
+        person:
+          $ref: '#/components/schemas/PersonPayloadDto'
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - rejected
+        circle_type:
+          type: string
+          enum:
+            - high
+            - medium
+            - low
+      required:
+        - id
+        - person
+        - status
+        - circle_type
+    PeopleCircleResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonCircleDto'
+      required:
+        - success
+        - data
+    SendCircleRequestRequestDto:
+      type: object
+      properties:
+        phone:
+          type: string
+        circle_type:
+          type: string
+          enum:
+            - high
+            - medium
+            - low
+      required:
+        - phone
+        - circle_type

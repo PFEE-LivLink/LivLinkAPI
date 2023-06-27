@@ -10,7 +10,9 @@ import {
   RevokeConnectionCircleResponseDto,
   ConnectionCircleDto,
 } from './dtos/helper';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Helper Circles')
 @Controller('helper/circles')
 @UseGuards(JwtGuardIfHelper)
 export class CircleHelperController {

@@ -2,7 +2,7 @@ name: LivLink API CI
 
 on:
   push:
-    branches: ['master']
+    branches: ['master', 'release']
   pull_request:
     branches: ['*']
 
@@ -61,7 +61,7 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.AT_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets. SONAR_CLOUD_TOKEN }}
         with:
           args: >

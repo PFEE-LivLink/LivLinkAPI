@@ -9,6 +9,10 @@ async function bootstrap() {
 
   const app = await CommandFactory.createWithoutRunning(CommandsModule, {
     logger,
+    serviceErrorHandler: (error) => {
+      logger.error(error);
+      process.exit(1);
+    },
     outputConfiguration: {
       outputError: (output) => {
         logger.error(output);

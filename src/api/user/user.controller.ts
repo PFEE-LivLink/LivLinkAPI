@@ -2,7 +2,9 @@ import { Controller, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUser } from '../authentification/decorator';
 import { User } from './schemas/user.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UserService) {}

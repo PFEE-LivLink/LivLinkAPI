@@ -1,7 +1,15 @@
+import { readdirSync, rmSync, statSync } from 'fs';
 import { branch, leaf, runner } from 'scriptease-cli';
 
 leaf('build', async () => {
   await runner.npxExec('nest', ['build']);
+  const fsObjs = readdirSync('dist/');
+  for (const fsObj of fsObjs) {
+    const isDirectory = statSync(`dist/${fsObj}`).isDirectory();
+    if (fsObj !== 'src' && isDirectory) {
+      rmSync(`dist/${fsObj}`, { recursive: true });
+    }
+  }
 });
 
 leaf('format', async () => {

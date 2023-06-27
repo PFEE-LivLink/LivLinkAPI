@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDefined, IsEnum, ValidateIf } from 'class-validator';
 import { TransformFrenchPhoneNumber } from 'src/utils/transformers/FrenchPhoneNumber.transform';
 import { IsFrenchPhoneNumber } from 'src/utils/validators';
@@ -23,13 +24,16 @@ export class PersonPayloadDto {
     return personPayload;
   }
 
+  @ApiProperty({ type: String, enum: personStatus })
   @IsEnum(personStatus)
   type: PersonStatus;
 
+  @ApiPropertyOptional({ type: String, description: `will be defined if 'type' is set to register` })
   @ValidateIf((o) => o.type === personStatus.register)
   @IsDefined()
   user_id?: string;
 
+  @ApiPropertyOptional({ type: String, description: `will be defined if 'type' is set to unknown` })
   @ValidateIf((o) => o.type === personStatus.unknown)
   @IsDefined()
   @IsFrenchPhoneNumber()
