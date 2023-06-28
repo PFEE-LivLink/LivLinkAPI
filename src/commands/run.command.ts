@@ -26,7 +26,7 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
     if (options.genDocs) {
-      await generateOpenApiDocument(app);
+      await generateOpenApiDocument(app, options.env);
       await setupSwagger(app);
       await setupRedoc(app);
     }

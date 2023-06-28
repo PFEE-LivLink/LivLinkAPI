@@ -24,12 +24,12 @@ export function getVersion(): string {
   return version;
 }
 
-export async function generateOpenApiDocument(app: INestApplication): Promise<void> {
-  const config = new DocumentBuilder()
-    .setTitle(API_TITLE)
-    .setDescription(API_DESCRIPTION)
-    .setVersion(getVersion())
-    .build();
+export async function generateOpenApiDocument(app: INestApplication, env?: string): Promise<void> {
+  let title = API_TITLE;
+  if (env !== undefined) {
+    title += ` - ${env}`;
+  }
+  const config = new DocumentBuilder().setTitle(title).setDescription(API_DESCRIPTION).setVersion(getVersion()).build();
   document = SwaggerModule.createDocument(app, config);
   logger.log('OpenAPI document generated');
 }
