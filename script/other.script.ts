@@ -6,7 +6,7 @@ leaf('build', async () => {
   const fsObjs = readdirSync('dist/');
   for (const fsObj of fsObjs) {
     const isDirectory = statSync(`dist/${fsObj}`).isDirectory();
-    if (fsObj !== 'src' && isDirectory) {
+    if (!fsObj.match(/^(src)|(lib)$/) && isDirectory) {
       rmSync(`dist/${fsObj}`, { recursive: true });
     }
   }

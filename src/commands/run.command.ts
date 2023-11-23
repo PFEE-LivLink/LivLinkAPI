@@ -3,7 +3,7 @@ import { CommandRunnerWithNestLogger } from './utils/command-runner-nest-logger.
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/api/app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { generateOpenApiDocument, setupRedoc, setupSwagger } from 'src/docs';
+import { generateOpenApiDocument, setupRedoc, setupSwagger } from 'lib/utils/docs';
 
 export interface RunCommandOptions {
   port: number;
@@ -23,7 +23,9 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     this.logger.debug(`Running with options: \n${JSON.stringify(options, null, 2)}`);
 
     const app = await NestFactory.create(AppModule.forModule(options));
-    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true, transformOptions: { enableImplicitConversion: true } }),
+    );
 
     if (options.genDocs) {
       await generateOpenApiDocument(app, options.env);

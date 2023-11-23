@@ -3,12 +3,13 @@ import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
 import { RunOptions } from 'src/constants';
 import { MongoServerMemory } from './database/mongoServerMemory';
 import { RunCommandOptions } from 'src/commands/run.command';
-import { AuthModule } from './authentification/auth.module';
+import { AuthModule } from '../../lib/authentification/auth.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ValidationInterceptor } from './validation.interceptor';
-import { CircleModule } from './circles/circle.module';
 import { HttpExceptionFilter } from './http-errors.filter';
 import { Connection } from 'mongoose';
+import { CallsHistoryModule } from 'lib/calls-history';
+import { CirclesModule } from 'lib/circles';
 
 @Module({})
 export class AppModule implements OnModuleDestroy {
@@ -29,7 +30,7 @@ export class AppModule implements OnModuleDestroy {
     return {
       global: true,
       module: AppModule,
-      imports: [MongooseModule.forRoot(mongoUri), AuthModule, CircleModule],
+      imports: [MongooseModule.forRoot(mongoUri), AuthModule, CallsHistoryModule, CirclesModule],
       controllers: [],
       providers: [
         {

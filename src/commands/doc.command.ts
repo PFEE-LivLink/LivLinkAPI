@@ -3,7 +3,7 @@ import { Command, Option } from 'nest-commander';
 import { CommandRunnerWithNestLogger } from './utils/command-runner-nest-logger.interface';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/api/app.module';
-import { generateOpenApiDocument, saveAsJson, saveAsYaml } from 'src/docs';
+import { generateOpenApiDocument, saveAsJson, saveAsYaml } from 'lib/utils/docs';
 
 type filesType = 'json' | 'yml';
 
