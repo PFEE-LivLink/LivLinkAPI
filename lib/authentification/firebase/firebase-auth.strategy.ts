@@ -4,7 +4,8 @@ import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
 import * as firebase from 'firebase-admin';
 import { readFileSync } from 'fs';
 
-const firebaseParams = JSON.parse(readFileSync('./firebase.config.json', 'utf8'));
+const firebasePath = process.env.FIREBASE_CONFIG_PATH ?? './firebase.config.json';
+const firebaseParams = JSON.parse(readFileSync(firebasePath, 'utf8'));
 
 @Injectable()
 export class FirebaseAuthStrategy extends PassportStrategy(Strategy, 'firebase-auth') {

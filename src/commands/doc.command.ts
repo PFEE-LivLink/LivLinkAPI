@@ -36,6 +36,10 @@ export class DocCommand extends CommandRunnerWithNestLogger {
 
     await generateOpenApiDocument(app);
 
+    if (!options.filename) {
+      options.filename = 'openapi.' + options.fileType;
+    }
+
     if (options.fileType === 'yml') {
       saveAsYaml(options.filename);
     } else {
@@ -48,7 +52,6 @@ export class DocCommand extends CommandRunnerWithNestLogger {
   @Option({
     flags: '-f, --filename [filename]',
     required: false,
-    defaultValue: 'openapi',
   })
   parseFilename(filename: string): string {
     return filename;

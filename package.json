@@ -1,6 +1,6 @@
 {
   "name": "liv-link-api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "author": "",
   "private": true,
@@ -99,9 +99,10 @@
       "json",
       "ts"
     ],
-    "rootDir": "./src/api",
+    "rootDir": "./",
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/../$1"
+      "^src/(.*)$": "<rootDir>/src/$1",
+      "^lib/(.*)$": "<rootDir>/lib/$1"
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
