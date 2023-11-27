@@ -21,6 +21,9 @@ export class GuardUnRegistered extends FirebaseAuthGuard {
     if (user.livLinkUser !== null) {
       throw new UnauthorizedException('User already registered');
     }
+    if (user.isAdministrator) {
+      throw new UnauthorizedException('Administrator cannot register');
+    }
     return user as TUser;
   }
 }

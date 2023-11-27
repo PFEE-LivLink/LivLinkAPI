@@ -1,10 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, plainToInstance } from 'class-transformer';
 import { IsEnum, IsString } from 'class-validator';
 import { IsFrenchPhoneNumber } from 'lib/utils/validators';
-import { userType } from '../schema/user.schema';
+import { User, userType } from '../schema/user.schema';
 
 export class UserDto {
+  public static from(user: User) {
+    return plainToInstance(UserDto, user);
+  }
+
   @Expose()
   @ApiProperty()
   public id: string;

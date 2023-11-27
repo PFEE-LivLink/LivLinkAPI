@@ -23,6 +23,7 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     this.logger.debug(`Running with options: \n${JSON.stringify(options, null, 2)}`);
 
     const app = await NestFactory.create(AppModule.forModule(options));
+    app.enableCors();
     app.useGlobalPipes(
       new ValidationPipe({ transform: true, whitelist: true, transformOptions: { enableImplicitConversion: true } }),
     );

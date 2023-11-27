@@ -39,3 +39,7 @@ To run the tests, you need to run :
 ```bash
 npm run test
 ```
+
+## Administrators
+
+To set the administrators, you need to set the environment variable `ADMIN_EMAILS` to a list of emails separated by a comma.

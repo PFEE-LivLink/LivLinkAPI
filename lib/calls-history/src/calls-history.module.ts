@@ -19,5 +19,6 @@ import { APP_FILTER } from '@nestjs/core';
       useClass: CallsHistoryFilter,
     },
   ],
+  exports: [CallsHistoryService],
 })
 export class CallsHistoryModule {}

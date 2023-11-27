@@ -1,6 +1,8 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { UserDocument } from './schema/user.schema';
+import { User, UserDocument } from './schema/user.schema';
+import { Pagination, PaginationMeta } from 'lib/utils/dtos/pagination/pagination';
+import { PaginationQueryDto } from 'lib/utils/dtos/pagination/pagination-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -8,6 +10,23 @@ export class UsersService {
 
   async registerUser(user: Partial<UserDocument>) {
     return await this.usersRepository.create(user);
+  }
+
+  async findAll(paginationOption?: PaginationQueryDto): Promise<Pagination<User>> {
+    const users = await this.usersRepository.find({});
+    let slicedUsers: User[] = [];
+    if (paginationOption) {
+      slicedUsers = users.slice(
+        (paginationOption.page - 1) * paginationOption.limit,
+        paginationOption.page * paginationOption.limit,
+      );
+    }
+    paginationOption = { page: paginationOption?.page ?? 1, limit: paginationOption?.limit ?? users.length };
+
+    return {
+      data: slicedUsers,
+      meta: PaginationMeta.from(paginationOption.page, paginationOption.limit, users.length),
+    };
   }
 
   async getByPhone(phone: string) {

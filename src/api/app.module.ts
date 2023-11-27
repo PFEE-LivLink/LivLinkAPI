@@ -10,6 +10,7 @@ import { HttpExceptionFilter } from './http-errors.filter';
 import { Connection } from 'mongoose';
 import { CallsHistoryModule } from 'lib/calls-history';
 import { CirclesModule } from 'lib/circles';
+import { AdminModule } from 'lib/admin';
 
 @Module({})
 export class AppModule implements OnModuleDestroy {
@@ -30,7 +31,7 @@ export class AppModule implements OnModuleDestroy {
     return {
       global: true,
       module: AppModule,
-      imports: [MongooseModule.forRoot(mongoUri), AuthModule, CallsHistoryModule, CirclesModule],
+      imports: [MongooseModule.forRoot(mongoUri), AuthModule, CallsHistoryModule, CirclesModule, AdminModule],
       controllers: [],
       providers: [
         {
