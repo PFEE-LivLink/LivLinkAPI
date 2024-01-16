@@ -28,7 +28,8 @@
     "tag:release": "se run tag:release",
     "doc:generate": "se run doc:generate",
     "doc:generate:redoc": "se run doc:generate:redoc",
-    "doc:generate:open-api-yml": "se run doc:generate:open-api-yml"
+    "doc:generate:open-api-yml": "se run doc:generate:open-api-yml",
+    "oapi:gen": "openapi-generator-cli generate -i http://localhost:3000/docs/docs.json -g kotlin -o ./gen"
   },
   "dependencies": {
     "@juicyllama/nestjs-redoc": "^2.3.10",

@@ -38,3 +38,4 @@ lerna-debug.log*
 doc
 firebase.config.json
 livlinkback-autogen-kotlin.zip
+gen
