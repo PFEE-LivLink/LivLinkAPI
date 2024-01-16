@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
 import { IsEnum, IsString } from 'class-validator';
-import { IsFrenchPhoneNumber } from 'lib/utils/validators';
-import { User, userType } from '../schema/user.schema';
+import { User, userType } from '../entities/user.entity';
+import { IsPhoneNumber } from 'lib/utils/validators';
 
 export class UserDto {
   public static from(user: User) {
@@ -15,7 +15,7 @@ export class UserDto {
 
   @Expose()
   @ApiProperty()
-  @IsFrenchPhoneNumber()
+  @IsPhoneNumber()
   public phone: string;
 
   @Expose()

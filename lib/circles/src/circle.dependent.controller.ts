@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import {
-  PeopleCircleResponseDto,
-  PersonCircleDto,
-  PersonCircleResponseDto,
-} from './dtos/dependent/people-circle.response.dto';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { PeopleCircleResponseDto, PersonCircleDto } from './dtos/dependent/people-circle.response.dto';
 import { GetUser } from '../../../lib/authentification/decorator';
-import { FilterGetPeopleInMyCirclesDto, FilterGetRequestsDto } from './dtos/dependent/filters.dto';
 import { SendCircleRequestRequestDto } from './dtos/dependent/send-circle-request.request.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CirclesService } from './circles.service';
 import { UsersService } from 'lib/users';
-import { User } from 'lib/users/src/schema/user.schema';
-import { PersonPayloadDto } from 'lib/users/src/dtos/person-payload.dto';
+import { User } from 'lib/users/src/entities/user.entity';
 import { OnlyForDependents } from 'lib/utils/decorators/OnlyForDependant';
+import { CirclesService } from './circles.service2';
 
 const prefix = 'dependent-circles';
 
@@ -27,35 +21,16 @@ export class CircleDependentController {
   @Get()
   @ApiOperation({
     summary: 'Get all people in my circles',
-    description: 'You can filter by circle type.',
     operationId: 'getPeopleInMyCircles',
   })
   @ApiOkResponse({ type: PeopleCircleResponseDto })
-  public async getPeopleInMyCircles(
-    @GetUser() dependent: User,
-    @Query() filters: FilterGetPeopleInMyCirclesDto,
-  ): Promise<PeopleCircleResponseDto> {
-    const circlePeople = await this.circlesService.getDependentUserCircles(
-      dependent,
-      filters.circle_type ? (ct) => ct === filters.circle_type : undefined,
-      (status) => status === 'accepted',
+  public async getPeopleInMyCircles(@GetUser() dependent: User): Promise<PeopleCircleResponseDto> {
+    const circlePeople = await this.circlesService.getUsersInCircle(dependent);
+    return new PeopleCircleResponseDto(
+      circlePeople.map((circlePerson) =>
+        PersonCircleDto.from(circlePerson.phone, circlePerson.status, circlePerson.type),
+      ),
     );
-    const promises = circlePeople.map(async (circlePerson) => {
-      const user = await this.usersService.getByPhone(circlePerson.phone);
-      let personPayload: PersonPayloadDto = PersonPayloadDto.fromUnknownPerson(circlePerson.phone);
-      if (user !== null) {
-        personPayload = PersonPayloadDto.fromRegisteredUser(user._id);
-      }
-      const responseDto = PersonCircleDto.from(
-        circlePerson.id,
-        personPayload,
-        circlePerson.status,
-        circlePerson.circleType,
-      );
-      return responseDto;
-    });
-    const circlePeopleDto = await Promise.all(promises);
-    return new PeopleCircleResponseDto(circlePeopleDto);
   }
 
   @Get('requests')
@@ -66,45 +41,14 @@ export class CircleDependentController {
     operationId: 'getMyRequests',
   })
   @ApiOkResponse({ type: PeopleCircleResponseDto })
-  public async getMyRequests(
-    @GetUser() dependent: User,
-    @Query() filters: FilterGetRequestsDto,
-  ): Promise<PeopleCircleResponseDto> {
-    const circlePeople = await this.circlesService.getDependentUserCircles(
-      dependent,
-      filters.circle_type ? (ct) => ct === filters.circle_type : undefined,
-      (status) => {
-        if (status === 'accepted') {
-          return false;
-        }
-        return filters.status ? status === filters.status : true;
-      },
+  public async getMyRequests(@GetUser() dependent: User): Promise<PeopleCircleResponseDto> {
+    const circlePeople = await this.circlesService.getUsersRequested(dependent);
+    return new PeopleCircleResponseDto(
+      circlePeople.map((circlePerson) =>
+        PersonCircleDto.from(circlePerson.phone, circlePerson.status, circlePerson.type),
+      ),
     );
-    const promises = circlePeople.map(async (circlePerson) => {
-      const user = await this.usersService.getByPhone(circlePerson.phone);
-      let personPayload: PersonPayloadDto = PersonPayloadDto.fromUnknownPerson(circlePerson.phone);
-      if (user !== null) {
-        personPayload = PersonPayloadDto.fromRegisteredUser(user._id);
-      }
-      const responseDto = PersonCircleDto.from(
-        circlePerson.id,
-        personPayload,
-        circlePerson.status,
-        circlePerson.circleType,
-      );
-      return responseDto;
-    });
-    const circlePeopleDto = await Promise.all(promises);
-    return new PeopleCircleResponseDto(circlePeopleDto);
   }
-
-  /*
-  The requests are done using phone numbers,
-    therefore the request is independent of the user's registration status.
-    If the user who is the target of the request has previously accepted a request from the dependent,
-it may automatically accept the request depending on the circumstances.
-This operation has the capability to reissue a request that was previously rejected.
-*/
 
   @Post('requests')
   @ApiOperation({
@@ -115,19 +59,7 @@ This operation has the capability to reissue a request that was previously rejec
   public async sendRequestToAddInCircle(
     @GetUser() dependent: User,
     @Body() dto: SendCircleRequestRequestDto,
-  ): Promise<PersonCircleResponseDto> {
-    const personCircleRaw = await this.circlesService.addPersonToCircleHandler(dependent, dto.phone, dto.circle_type);
-    const user = await this.usersService.getByPhone(dto.phone);
-    let personPayload: PersonPayloadDto = PersonPayloadDto.fromUnknownPerson(personCircleRaw.phone);
-    if (user !== null) {
-      personPayload = PersonPayloadDto.fromRegisteredUser(user._id);
-    }
-    const responseDto = PersonCircleDto.from(
-      personCircleRaw.id,
-      personPayload,
-      personCircleRaw.status,
-      personCircleRaw.circleType,
-    );
-    return new PersonCircleResponseDto(responseDto);
+  ): Promise<void> {
+    await this.circlesService.addPersonToCircleHandler(dependent, dto.phone, dto.type);
   }
 }

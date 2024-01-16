@@ -1,27 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { CallsHistoryRepository } from './calls-history.repository';
 import { PaginationQueryDto } from 'lib/utils/dtos/pagination/pagination-query.dto';
-import { Call } from './schema/call.schema';
 import { Pagination, PaginationMeta } from 'lib/utils/dtos/pagination/pagination';
-import { User } from 'lib/users/src/schema/user.schema';
+import { User } from 'lib/users/src/entities/user.entity';
 import { CallDto } from './dtos/CallDto';
 import { CallFormatError } from './error';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Call, CallsHistory } from './entities';
+import { validate } from 'class-validator';
+import { PermissionsService } from 'lib/permissions';
 
 @Injectable()
 export class CallsHistoryService {
-  constructor(private readonly callsHistoryRepository: CallsHistoryRepository) {}
+  constructor(
+    @InjectRepository(CallsHistory) private readonly callsHistoryRepository: Repository<CallsHistory>,
+    private readonly permService: PermissionsService,
+  ) {}
 
-  hasAuthorizationToAccess(demander: User, target: User): boolean {
+  async hasAuthorizationToAccess(demander: User, target: User): Promise<boolean> {
     if (!target.isDependent()) return false;
-    return true;
+    if (await this.permService.havePermission(target.phone, demander.phone, 'calls-history:read')) {
+      return true;
+    }
+    return false;
   }
 
   async createEmptyCallsHistory(phone: string) {
-    return await this.callsHistoryRepository.create({ phone, callsHistory: [] });
+    const ch = this.callsHistoryRepository.create({ phone, callsHistory: [] });
+    return await ch.save();
   }
 
   async getCallsHistory(historyTarget: string, paginationOption?: PaginationQueryDto): Promise<Pagination<Call>> {
-    let history = await this.callsHistoryRepository.findOne({ phone: historyTarget });
+    let history = await this.callsHistoryRepository.findOne({ where: { phone: historyTarget } });
     if (!history) {
       history = await this.createEmptyCallsHistory(historyTarget);
     }
@@ -41,15 +51,15 @@ export class CallsHistoryService {
     };
   }
 
-  private checkCallsValidity(target: User, calls: CallDto[]) {
-    const targetPhone = target.phone;
-    const hasError = calls.some((call) => {
-      if (call.callee === call.caller) return true;
-      if (call.callee !== targetPhone && call.caller !== targetPhone) return true;
-      if (new Date(call.endDate) < new Date(call.startDate)) return true;
-      if (new Date(call.startDate) > new Date()) return true;
-      return false;
-    });
+  private async checkCallsValidity(calls: Call[]) {
+    let hasError = false;
+    for (const call of calls) {
+      const validationErrors = await validate(call);
+      if (validationErrors.length > 0) {
+        hasError = true;
+        break;
+      }
+    }
     if (hasError) {
       throw new CallFormatError('The given set of call contains invalid calls dtos');
     }
@@ -64,12 +74,21 @@ export class CallsHistoryService {
   }
 
   async addCalls(target: User, calls: CallDto[]) {
-    let history = await this.callsHistoryRepository.findOne({ phone: target.phone });
+    let history = await this.callsHistoryRepository.findOne({ where: { phone: target.phone } });
     if (!history) {
       history = await this.createEmptyCallsHistory(target.phone);
     }
-    this.checkCallsValidity(target, calls);
-    const mappedCalls = this.sortCalls(calls).map((call) => new Call(call));
+    const mappedCalls = this.sortCalls(calls).map(
+      (call) =>
+        new Call({
+          callee: call.callee,
+          caller: call.caller,
+          startDate: new Date(call.startDate),
+          endDate: call.endDate ? new Date(call.endDate) : undefined,
+          status: call.status,
+        }),
+    );
+    await this.checkCallsValidity(mappedCalls);
     history.callsHistory.unshift(...mappedCalls);
     await history.save();
   }

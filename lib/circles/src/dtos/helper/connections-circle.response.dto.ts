@@ -1,8 +1,8 @@
 import { IsEnum, IsString } from 'class-validator';
-import { CircleType, circleType } from '../../schemas/circle.schema';
 import { SuccessTemplateDto } from 'lib/utils/dtos/template.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { CircleType, circleType } from '../../entities/circlePerson.entity';
 
 export class ConnectionCircleDto {
   static from(requestId: string, circleType: CircleType): ConnectionCircleDto {
@@ -27,5 +27,5 @@ export class ConnectionCircleDto {
 
 export class ConnectionsCircleResponseDto extends SuccessTemplateDto<ConnectionCircleDto[]> {
   @ApiProperty({ type: [ConnectionCircleDto] })
-  data: ConnectionCircleDto[];
+  declare data: ConnectionCircleDto[];
 }

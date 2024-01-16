@@ -27,5 +27,5 @@ export class RequestCircleHandleResponseDto extends SuccessTemplateDto<RequestCi
   }
 
   @ApiProperty({ type: RequestCircleHandleDto })
-  data: RequestCircleHandleDto;
+  declare data: RequestCircleHandleDto;
 }

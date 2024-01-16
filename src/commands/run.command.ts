@@ -4,11 +4,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/api/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { generateOpenApiDocument, setupRedoc, setupSwagger } from 'lib/utils/docs';
+import { AppConfiguration, appConfiguration } from 'lib/config/utils-config/src';
 
 export interface RunCommandOptions {
-  port: number;
-  env: string;
-  jwtSecret: string;
   genDocs: boolean;
 }
 
@@ -22,51 +20,22 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     this.logger.log(`Launching the '${this.command.name()}' command...`);
     this.logger.debug(`Running with options: \n${JSON.stringify(options, null, 2)}`);
 
-    const app = await NestFactory.create(AppModule.forModule(options));
+    const app = await NestFactory.create(AppModule);
     app.enableCors();
     app.useGlobalPipes(
       new ValidationPipe({ transform: true, whitelist: true, transformOptions: { enableImplicitConversion: true } }),
     );
+    const appConfig = app.get<AppConfiguration>(appConfiguration.KEY);
 
     if (options.genDocs) {
-      await generateOpenApiDocument(app, options.env);
+      await generateOpenApiDocument(app, appConfig.env);
       await setupSwagger(app);
       await setupRedoc(app);
     }
 
-    await app.listen(options.port, () => {
-      this.logger.log(`Server started on port ${options.port} on '${options.env}' environment`);
+    await app.listen(appConfig.port, () => {
+      this.logger.log(`Server started at ${appConfig.domain} on '${appConfig.env}' environment`);
     });
-  }
-
-  @Option({
-    flags: '-p, --port [port]',
-    required: false,
-    env: 'PORT',
-    defaultValue: '8000',
-  })
-  parsePort(port: string): number {
-    return parseInt(port, 10);
-  }
-
-  @Option({
-    flags: '-e, --env [env]',
-    choices: ['dev', 'prod', 'test'],
-    required: false,
-    env: 'NODE_ENV',
-    defaultValue: 'dev',
-  })
-  parseEnv(env: string): string {
-    return env;
-  }
-
-  @Option({
-    flags: '--jwt-secret [jwtSecret]',
-    required: false,
-    env: 'JWT_SECRET',
-  })
-  parseJwtSecret(jwtSecret: string): string {
-    return jwtSecret;
   }
 
   @Option({

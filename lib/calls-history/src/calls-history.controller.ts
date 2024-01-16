@@ -43,6 +43,8 @@ export class CallsHistoryController {
   @ApiOperation({
     operationId: 'getDependentCallHistory',
     summary: 'Get a dependent call history. only Helper are allow to do that',
+    description: `This endpoint is only for Helpers. Helpers can access to the call history of their dependents.\n
+    The dependents need to have set the permission "calls-history:read" to the corresponding circle of the helper.`,
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOkResponse({ type: CallDtoPagination })
@@ -55,7 +57,7 @@ export class CallsHistoryController {
     if (!targetUser) {
       throw new BadRequestException('User not found');
     }
-    if (!this.callsHistoryService.hasAuthorizationToAccess(user.livLinkUser!, targetUser)) {
+    if (!(await this.callsHistoryService.hasAuthorizationToAccess(user.livLinkUser!, targetUser))) {
       throw new BadRequestException('You are not authorized to access this user calls history');
     }
     const calls = await this.callsHistoryService.getCallsHistory(targetUser.phone, pagination);

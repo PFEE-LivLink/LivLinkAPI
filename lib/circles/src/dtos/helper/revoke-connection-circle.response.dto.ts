@@ -27,5 +27,5 @@ export class RevokeConnectionCircleResponseDto extends SuccessTemplateDto<Revoke
   }
 
   @ApiProperty({ type: RevokeConnectionCircleDto })
-  data: RevokeConnectionCircleDto;
+  declare data: RevokeConnectionCircleDto;
 }

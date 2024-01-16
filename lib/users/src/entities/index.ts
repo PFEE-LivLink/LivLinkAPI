@@ -1,3 +1,1 @@
-export * from './UserDetails';
-export * from './UserLight';
-export * from './UserUltraLight';
+export * from './user.entity';

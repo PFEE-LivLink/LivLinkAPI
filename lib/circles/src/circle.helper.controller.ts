@@ -8,9 +8,8 @@ import {
   ConnectionCircleDto,
 } from './dtos/helper';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CirclesService } from './circles.service';
-import { UsersInfosService } from 'lib/users/src/user-infos.service';
 import { OnlyForHelpers } from 'lib/utils/decorators/OnlyForHelpers';
+import { CirclesService } from './circles.service2';
 
 const prefix = 'helper-circles';
 
@@ -19,7 +18,7 @@ const prefix = 'helper-circles';
 @OnlyForHelpers()
 @Controller(prefix)
 export class CircleHelperController {
-  constructor(private readonly circlesService: CirclesService, private readonly usersInfoService: UsersInfosService) {}
+  constructor(private readonly circlesService: CirclesService) {}
 
   @Get('requests')
   @ApiOperation({ operationId: 'getReceivedRequests', summary: 'Get all received requests' })
@@ -32,14 +31,14 @@ export class CircleHelperController {
   @ApiOperation({ operationId: 'acceptRequest', summary: 'Accept a request' })
   @ApiOkResponse({ type: RequestCircleHandleResponseDto })
   public async acceptRequest(@Param('requestId') requestId: string): Promise<RequestCircleHandleResponseDto> {
-    return RequestCircleHandleResponseDto.from(true, RequestCircleDto.from('todo', 'todo', 'high'));
+    return RequestCircleHandleResponseDto.from(true, RequestCircleDto.from('todo', 'todo', 'Near'));
   }
 
   @Post('requests/:requestId/refuse')
   @ApiOperation({ operationId: 'refuseRequest', summary: 'Refuse a request' })
   @ApiOkResponse({ type: RequestCircleHandleResponseDto })
   public async refuseRequest(@Param('requestId') requestId: string): Promise<RequestCircleHandleResponseDto> {
-    return RequestCircleHandleResponseDto.from(false, RequestCircleDto.from('todo', 'todo', 'high'));
+    return RequestCircleHandleResponseDto.from(false, RequestCircleDto.from('todo', 'todo', 'Near'));
   }
 
   @Get('')
@@ -53,6 +52,6 @@ export class CircleHelperController {
   @ApiOperation({ operationId: 'revokeMyConnection', summary: 'Revoke my connection' })
   @ApiOkResponse({ type: RevokeConnectionCircleResponseDto })
   public async revokeMyConnection(): Promise<RevokeConnectionCircleResponseDto> {
-    return RevokeConnectionCircleResponseDto.from(ConnectionCircleDto.from('todo', 'high'));
+    return RevokeConnectionCircleResponseDto.from(ConnectionCircleDto.from('todo', 'Near'));
   }
 }
