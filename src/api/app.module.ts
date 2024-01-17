@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ValidationInterceptor } from './validation.interceptor';
+import * as path from 'path';
 import {
   AppConfiguration,
   MongoConfiguration,
@@ -27,7 +28,7 @@ import { PermissionsModule } from 'lib/permissions';
         return {
           type: 'mongodb',
           url: config.uri,
-          entities: ['**/*.entity.{ts,js}'],
+          entities: [path.join(__dirname, '../../lib', '/**/*.entity.{ts,js}')],
           synchronize: true,
           useNewUrlParser: true,
           useUnifiedTopology: true,
