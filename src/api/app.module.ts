@@ -14,6 +14,7 @@ import { UsersModule } from 'lib/users';
 import { AuthModule } from 'lib/authentification/auth.module';
 import { FeatureConfigModule } from 'lib/config/feature-config/src';
 import { CallsHistoryModule } from 'lib/calls-history';
+import { PermissionsModule } from 'lib/permissions';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CallsHistoryModule } from 'lib/calls-history';
         };
       },
     }),
+    PermissionsModule,
     AuthModule,
     UsersModule,
     CallsHistoryModule,
