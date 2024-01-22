@@ -17,7 +17,7 @@ export class CircleHelperController {
 
   @Get('requests')
   @ApiOperation({ operationId: 'getReceivedRequests', summary: 'Get all received requests' })
-  @ApiOkResponse({ type: [ReceivedRequestDto] })
+  @ApiOkResponse({ type: [ReceivedRequestDto], description: 'All received requests' })
   public async getReceivedRequests(@GetUser() user: AuthStrategyValidateResult): Promise<ReceivedRequestDto[]> {
     const requests = await this.circlesService.GetRequests(user.livLinkUser!);
     return requests.map((request) => ReceivedRequestDto.from(request.user, request.request));
