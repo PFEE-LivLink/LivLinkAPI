@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { Expose } from 'class-transformer';
-import { Call } from '../schema/call.schema';
-import { IsFrenchPhoneNumber } from 'lib/utils/validators';
+import { Call, CallStatus, callStatus } from '../entities';
+import { IsPhoneNumber } from 'lib/utils/validators';
 
 export class CallDto {
   static from(call: Call) {
@@ -10,18 +10,19 @@ export class CallDto {
     dto.caller = call.caller;
     dto.callee = call.callee;
     dto.startDate = call.startDate.toISOString();
-    dto.endDate = call.endDate.toISOString();
+    dto.endDate = call.endDate?.toISOString();
+    dto.status = call.status;
     return dto;
   }
 
   @Expose()
   @ApiProperty({ example: '+33677777777' })
-  @IsFrenchPhoneNumber()
+  @IsPhoneNumber()
   caller: string;
 
   @Expose()
   @ApiProperty({ example: '+33677777777' })
-  @IsFrenchPhoneNumber()
+  @IsPhoneNumber()
   callee: string;
 
   @Expose()
@@ -30,7 +31,13 @@ export class CallDto {
   startDate: string;
 
   @Expose()
-  @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
+  @ApiProperty({ required: false, example: '2021-01-01T00:00:00.000Z' })
+  @IsOptional()
   @IsDateString()
-  endDate: string;
+  endDate?: string;
+
+  @Expose()
+  @ApiProperty({ enum: callStatus, example: callStatus.Success })
+  @IsEnum(callStatus)
+  status: CallStatus;
 }

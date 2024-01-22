@@ -14,9 +14,11 @@ export class FirebaseAuthStrategy extends PassportStrategy(Strategy, 'firebase-a
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
-    this.defaultApp = firebase.initializeApp({
-      credential: firebase.credential.cert(firebaseParams),
-    });
+    if (process.env.NODE_ENV !== 'test') {
+      this.defaultApp = firebase.initializeApp({
+        credential: firebase.credential.cert(firebaseParams),
+      });
+    }
   }
 
   async validate(token: string) {
