@@ -5,15 +5,20 @@ import { Expose } from 'class-transformer';
 import { CirclePersonStatus, CircleType, circlePersonStatus, circleType } from '../../entities/circlePerson.entity';
 
 export class PersonCircleDto {
-  static from(phone: string, status: CirclePersonStatus, circleType: CircleType): PersonCircleDto {
-    return new PersonCircleDto(phone, status, circleType);
+  static from(id: string, phone: string, status: CirclePersonStatus, circleType: CircleType): PersonCircleDto {
+    return new PersonCircleDto(id, phone, status, circleType);
   }
 
-  constructor(phone: string, status: CirclePersonStatus, circleType: CircleType) {
+  constructor(id: string, phone: string, status: CirclePersonStatus, circleType: CircleType) {
+    this.id = id;
     this.phone = phone;
     this.status = status;
     this.type = circleType;
   }
+
+  @Expose()
+  @ApiProperty({ type: String })
+  id: string;
 
   @Expose()
   @ApiProperty({ type: String })

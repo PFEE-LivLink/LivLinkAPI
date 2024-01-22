@@ -28,7 +28,7 @@ export class CircleDependentController {
     const circlePeople = await this.circlesService.getUsersInCircle(dependent);
     return new PeopleCircleResponseDto(
       circlePeople.map((circlePerson) =>
-        PersonCircleDto.from(circlePerson.phone, circlePerson.status, circlePerson.type),
+        PersonCircleDto.from(circlePerson.id, circlePerson.phone, circlePerson.status, circlePerson.type),
       ),
     );
   }
@@ -36,8 +36,6 @@ export class CircleDependentController {
   @Get('requests')
   @ApiOperation({
     summary: 'Get all my requests',
-    description:
-      'By default this will also display the requests that have been rejected. You can filter by circle type and status.',
     operationId: 'getMyRequests',
   })
   @ApiOkResponse({ type: PeopleCircleResponseDto })
@@ -45,7 +43,7 @@ export class CircleDependentController {
     const circlePeople = await this.circlesService.getUsersRequested(dependent);
     return new PeopleCircleResponseDto(
       circlePeople.map((circlePerson) =>
-        PersonCircleDto.from(circlePerson.phone, circlePerson.status, circlePerson.type),
+        PersonCircleDto.from(circlePerson.id, circlePerson.phone, circlePerson.status, circlePerson.type),
       ),
     );
   }

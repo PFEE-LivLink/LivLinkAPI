@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { IsPhoneNumber } from 'lib/utils/validators';
 import { Column } from 'typeorm';
 
 export const circlePersonStatus = {
   Pending: 'Pending',
   Accepted: 'Accepted',
-  Rejected: 'Rejected',
 } as const;
 export type CirclePersonStatus = (typeof circlePersonStatus)[keyof typeof circlePersonStatus];
 
@@ -18,6 +17,10 @@ export const circleType = {
 export type CircleType = (typeof circleType)[keyof typeof circleType];
 
 export class CirclePerson {
+  @Column()
+  @IsString()
+  id: string;
+
   @Column()
   @IsPhoneNumber()
   phone: string;

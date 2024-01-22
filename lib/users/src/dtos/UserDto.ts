@@ -3,6 +3,7 @@ import { Expose, plainToInstance } from 'class-transformer';
 import { IsEnum, IsString } from 'class-validator';
 import { User, userType } from '../entities/user.entity';
 import { IsPhoneNumber } from 'lib/utils/validators';
+import { ObjectIdToString } from 'lib/utils/decorators/objectid2string.decorator';
 
 export class UserDto {
   public static from(user: User) {
@@ -11,7 +12,8 @@ export class UserDto {
 
   @Expose()
   @ApiProperty()
-  public id: string;
+  @ObjectIdToString()
+  public _id: string;
 
   @Expose()
   @ApiProperty()

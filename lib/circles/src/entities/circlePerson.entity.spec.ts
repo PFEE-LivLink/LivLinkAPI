@@ -70,10 +70,5 @@ describe('CirclePerson entity', () => {
       const errors = await validate(circlePerson);
       expect(errors.length).toEqual(0);
     });
-    it('check valid status, rejected', async () => {
-      const circlePerson = circlePersonBasicStub({ status: 'Rejected' });
-      const errors = await validate(circlePerson);
-      expect(errors.length).toEqual(0);
-    });
   });
 });
