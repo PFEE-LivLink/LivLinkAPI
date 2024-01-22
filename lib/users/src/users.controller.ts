@@ -16,8 +16,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  @ApiOperation({ operationId: 'GetMe' })
-  @ApiOkResponse({ type: UserDto })
+  @ApiOperation({ operationId: 'GetMe', summary: 'Get the authenticated user' })
+  @ApiOkResponse({ type: UserDto, description: "Successful response with the user's informations" })
   async getMyCallHistory(@GetUser() user: AuthStrategyValidateResult) {
     return plainToInstance(UserDto, user.livLinkUser!);
   }

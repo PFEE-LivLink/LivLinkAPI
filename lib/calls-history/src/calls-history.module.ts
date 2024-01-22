@@ -7,9 +7,10 @@ import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Call, CallsHistory } from './entities';
 import { PermissionsModule } from 'lib/permissions';
+import { CirclesModule } from 'lib/circles';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Call, CallsHistory]), UsersModule, PermissionsModule],
+  imports: [TypeOrmModule.forFeature([Call, CallsHistory]), UsersModule, PermissionsModule, CirclesModule],
   controllers: [CallsHistoryController],
   providers: [
     CallsHistoryService,

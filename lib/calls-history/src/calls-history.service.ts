@@ -9,17 +9,40 @@ import { Repository } from 'typeorm';
 import { Call, CallsHistory } from './entities';
 import { validate } from 'class-validator';
 import { PermissionsService } from 'lib/permissions';
+import { CirclesService } from 'lib/circles';
+import { UsersService } from 'lib/users';
 
 @Injectable()
 export class CallsHistoryService {
   constructor(
     @InjectRepository(CallsHistory) private readonly callsHistoryRepository: Repository<CallsHistory>,
+    private readonly circleService: CirclesService,
     private readonly permService: PermissionsService,
+    private readonly usersService: UsersService,
   ) {}
 
-  async hasAuthorizationToAccess(demander: User, target: User): Promise<boolean> {
-    if (!target.isDependent()) return false;
-    if (await this.permService.havePermission(target.phone, demander.phone, 'calls-history:read')) {
+  async getCallsHistoriesAuthorized(user: User): Promise<User[]> {
+    const phones = await this.circleService.getPhonesThanHaveUserInCircle(user);
+    const authorizedUsers: User[] = [];
+    for (const phone of phones) {
+      if (await this.permService.havePermission(phone, user.phone, 'calls-history:read')) {
+        const user = await this.usersService.getByPhone(phone);
+        if (user) {
+          authorizedUsers.push(user);
+        }
+      }
+    }
+    return authorizedUsers;
+  }
+
+  async hasAuthorizationToAccess(demander: User | string, target: User | string): Promise<boolean> {
+    if (typeof demander !== 'string') {
+      demander = demander.phone;
+    }
+    if (typeof target !== 'string') {
+      target = target.phone;
+    }
+    if (await this.permService.havePermission(target, demander, 'calls-history:read')) {
       return true;
     }
     return false;

@@ -118,4 +118,19 @@ export class CirclesService {
     circlesDoc[0].persons = circlesDoc[0].persons.filter((personCircle) => personCircle.id !== requestId);
     await this.userCirclesRepo.save(circlesDoc[0]);
   }
+
+  async getPhonesThanHaveUserInCircle(user: User): Promise<string[]> {
+    const circlesDoc = await this.userCirclesRepo.find({
+      persons: {
+        $elemMatch: {
+          phone: user.phone,
+          status: 'Accepted',
+        },
+      },
+    });
+    if (!circlesDoc || circlesDoc.length === 0) {
+      return [];
+    }
+    return circlesDoc.map((circleDoc) => circleDoc.phone);
+  }
 }
