@@ -39,100 +39,101 @@ export class CirclesService {
     return persons;
   }
 
-  async getUsersRequested(user: User): Promise<CirclePerson[]> {
-    const circlesDoc = await this.userCirclesRepo.findOne({ where: { phone: user.phone } });
-    if (!circlesDoc) {
-      return [];
-    }
-    const persons = circlesDoc.persons.filter((personCircle) => personCircle.status === 'Pending');
-    return persons;
-  }
+  // async getUsersRequested(user: User): Promise<CirclePerson[]> {
+  //   const circlesDoc = await this.userCirclesRepo.findOne({ where: { phone: user.phone } });
+  //   if (!circlesDoc) {
+  //     return [];
+  //   }
+  //   const persons = circlesDoc.persons.filter((personCircle) => personCircle.status === 'Pending');
+  //   return persons;
+  // }
 
   async addPersonToCircleHandler(user: User, phone: string, newCircleType: CircleType) {
     const circlesDoc = await this.userCirclesRepo.findOne({ where: { phone: user.phone } });
     if (!circlesDoc) {
       return await this.userCirclesRepo.save({
         phone: user.phone,
-        persons: [{ id: v4(), phone, type: newCircleType, status: 'Pending' }],
+        persons: [{ id: v4(), phone, type: newCircleType, status: 'Accepted' }],
       });
     }
     const personCircle = circlesDoc.persons.filter((personCircle) => personCircle.phone === phone);
     if (personCircle.length === 0) {
-      circlesDoc.persons.push({ id: v4(), phone, type: newCircleType, status: 'Pending' });
+      circlesDoc.persons.push({ id: v4(), phone, type: newCircleType, status: 'Accepted' });
       return await this.userCirclesRepo.save(circlesDoc);
     }
     personCircle[0].type = newCircleType;
+    personCircle[0].status = 'Accepted';
     return await this.userCirclesRepo.save(circlesDoc);
   }
 
-  async GetRequests(user: User): Promise<Array<{ user: User; request: CirclePerson }>> {
-    const circlesDoc = await this.userCirclesRepo.find({
-      persons: {
-        $elemMatch: {
-          phone: user.phone,
-          status: 'Pending',
-        },
-      },
-    });
-    if (!circlesDoc) {
-      return [];
-    }
-    const persons = circlesDoc.map((circleDoc) => {
-      return {
-        phone: circleDoc.phone,
-        requests: circleDoc.persons.filter(
-          (personCircle) => personCircle.status === 'Pending' && personCircle.phone === user.phone,
-        ),
-      };
-    });
-    const requests: Array<{ user: User; request: CirclePerson }> = [];
-    for (const person of persons) {
-      for (const request of person.requests) {
-        requests.push({ user: (await this.usersService.getByPhone(person.phone))!, request });
-      }
-    }
-    return requests;
-  }
+  // async GetRequests(user: User): Promise<Array<{ user: User; request: CirclePerson }>> {
+  //   const circlesDoc = await this.userCirclesRepo.find({
+  //     persons: {
+  //       $elemMatch: {
+  //         phone: user.phone,
+  //         status: 'Pending',
+  //       },
+  //     },
+  //   });
+  //   if (!circlesDoc) {
+  //     return [];
+  //   }
+  //   const persons = circlesDoc.map((circleDoc) => {
+  //     return {
+  //       phone: circleDoc.phone,
+  //       requests: circleDoc.persons.filter(
+  //         (personCircle) => personCircle.status === 'Pending' && personCircle.phone === user.phone,
+  //       ),
+  //     };
+  //   });
+  //   const requests: Array<{ user: User; request: CirclePerson }> = [];
+  //   for (const person of persons) {
+  //     for (const request of person.requests) {
+  //       requests.push({ user: (await this.usersService.getByPhone(person.phone))!, request });
+  //     }
+  //   }
+  //   return requests;
+  // }
 
-  async acceptRequest(user: User, requestId: string): Promise<boolean> {
-    const circlesDoc = await this.userCirclesRepo.find({
-      persons: {
-        $elemMatch: {
-          phone: user.phone,
-          status: 'Pending',
-          id: requestId,
-        },
-      },
-    });
-    if (!circlesDoc || circlesDoc.length === 0) {
-      return false;
-    }
-    const request = circlesDoc[0].persons.filter((personCircle) => personCircle.id === requestId);
-    if (request.length === 0) {
-      return false;
-    }
-    request[0].status = 'Accepted';
-    await this.userCirclesRepo.save(circlesDoc[0]);
-    return true;
-  }
+  // async acceptRequest(user: User, requestId: string): Promise<boolean> {
+  //   const circlesDoc = await this.userCirclesRepo.find({
+  //     persons: {
+  //       $elemMatch: {
+  //         phone: user.phone,
+  //         status: 'Pending',
+  //         id: requestId,
+  //       },
+  //     },
+  //   });
+  //   if (!circlesDoc || circlesDoc.length === 0) {
+  //     return false;
+  //   }
+  //   const request = circlesDoc[0].persons.filter((personCircle) => personCircle.id === requestId);
+  //   if (request.length === 0) {
+  //     return false;
+  //   }
+  //   request[0].status = 'Accepted';
+  //   await this.userCirclesRepo.save(circlesDoc[0]);
+  //   return true;
+  // }
 
-  async rejectRequest(user: User, requestId: string): Promise<boolean> {
-    const circlesDoc = await this.userCirclesRepo.find({
-      persons: {
-        $elemMatch: {
-          phone: user.phone,
-          status: 'Pending',
-          id: requestId,
-        },
-      },
-    });
-    if (!circlesDoc || circlesDoc.length === 0) {
-      return false;
-    }
-    circlesDoc[0].persons = circlesDoc[0].persons.filter((personCircle) => personCircle.id !== requestId);
-    await this.userCirclesRepo.save(circlesDoc[0]);
-    return true;
-  }
+  // async rejectRequest(user: User, requestId: string): Promise<boolean> {
+  //   const circlesDoc = await this.userCirclesRepo.find({
+  //     persons: {
+  //       $elemMatch: {
+  //         phone: user.phone,
+  //         status: 'Pending',
+  //         id: requestId,
+  //       },
+  //     },
+  //   });
+  //   if (!circlesDoc || circlesDoc.length === 0) {
+  //     return false;
+  //   }
+  //   circlesDoc[0].persons = circlesDoc[0].persons.filter((personCircle) => personCircle.id !== requestId);
+  //   await this.userCirclesRepo.save(circlesDoc[0]);
+  //   return true;
+  // }
 
   async getPhonesThanHaveUserInCircle(user: User): Promise<string[]> {
     const circlesDoc = await this.userCirclesRepo.find({

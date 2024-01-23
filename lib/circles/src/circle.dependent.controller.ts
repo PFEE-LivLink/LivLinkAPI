@@ -33,29 +33,42 @@ export class CircleDependentController {
     );
   }
 
-  @Get('requests')
-  @ApiOperation({
-    summary: 'Get all my requests',
-    operationId: 'getMyRequests',
-  })
-  @ApiOkResponse({ type: PeopleCircleResponseDto, description: 'All my requests' })
-  public async getMyRequests(@GetUser() user: AuthStrategyValidateResult): Promise<PeopleCircleResponseDto> {
-    const circlePeople = await this.circlesService.getUsersRequested(user.livLinkUser!);
-    return new PeopleCircleResponseDto(
-      circlePeople.map((circlePerson) =>
-        PersonCircleDto.from(circlePerson.id, circlePerson.phone, circlePerson.status, circlePerson.type),
-      ),
-    );
-  }
+  // @Get('requests')
+  // @ApiOperation({
+  //   summary: 'Get all my requests',
+  //   operationId: 'getMyRequests',
+  // })
+  // @ApiOkResponse({ type: PeopleCircleResponseDto, description: 'All my requests' })
+  // public async getMyRequests(@GetUser() user: AuthStrategyValidateResult): Promise<PeopleCircleResponseDto> {
+  //   const circlePeople = await this.circlesService.getUsersRequested(user.livLinkUser!);
+  //   return new PeopleCircleResponseDto(
+  //     circlePeople.map((circlePerson) =>
+  //       PersonCircleDto.from(circlePerson.id, circlePerson.phone, circlePerson.status, circlePerson.type),
+  //     ),
+  //   );
+  // }
 
-  @Post('requests')
+  // @Post('requests')
+  // @ApiOperation({
+  //   summary: 'Send a request to add a person in my circles',
+  //   description: `This endpoint retrieves a list of users in the system.`,
+  //   operationId: 'sendRequestToAddInCircle',
+  // })
+  // @ApiOkResponse({ description: 'Request sent' })
+  // public async sendRequestToAddInCircle(
+  //   @GetUser() user: AuthStrategyValidateResult,
+  //   @Body() dto: SendCircleRequestRequestDto,
+  // ): Promise<void> {
+  //   await this.circlesService.addPersonToCircleHandler(user.livLinkUser!, dto.phone, dto.type);
+  // }
+
+  @Post('add')
   @ApiOperation({
-    summary: 'Send a request to add a person in my circles',
-    description: `This endpoint retrieves a list of users in the system.`,
-    operationId: 'sendRequestToAddInCircle',
+    summary: 'Add a person in my circles',
+    operationId: 'addInCircle',
   })
-  @ApiOkResponse({ description: 'Request sent' })
-  public async sendRequestToAddInCircle(
+  @ApiOkResponse({ description: '' })
+  public async addInCircle(
     @GetUser() user: AuthStrategyValidateResult,
     @Body() dto: SendCircleRequestRequestDto,
   ): Promise<void> {
