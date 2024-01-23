@@ -1,60 +1,51 @@
-import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
-import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
-import { RunOptions } from 'src/constants';
-import { MongoServerMemory } from './database/mongoServerMemory';
-import { RunCommandOptions } from 'src/commands/run.command';
-import { AuthModule } from '../../lib/authentification/auth.module';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ValidationInterceptor } from './validation.interceptor';
-import { HttpExceptionFilter } from './http-errors.filter';
-import { Connection } from 'mongoose';
+import * as path from 'path';
+import {
+  AppConfiguration,
+  MongoConfiguration,
+  appConfiguration,
+  mongoConfiguration,
+} from 'lib/config/utils-config/src';
+import { TestHelper } from 'lib/utils/TestHelper';
+import { UsersModule } from 'lib/users';
+import { AuthModule } from 'lib/authentification/auth.module';
+import { FeatureConfigModule } from 'lib/config/feature-config/src';
 import { CallsHistoryModule } from 'lib/calls-history';
-import { CirclesModule } from 'lib/circles';
-import { AdminModule } from 'lib/admin';
+import { PermissionsModule } from 'lib/permissions';
 
-@Module({})
-export class AppModule implements OnModuleDestroy {
-  public static async forModule(options: Partial<RunCommandOptions>): Promise<DynamicModule> {
-    const dbName = process.env.MONGO_DB_NAME ?? 'liv-link-api';
-    let mongoUri = '';
-    if (options.env === 'test') {
-      await MongoServerMemory.create();
-      mongoUri = MongoServerMemory.getUri();
-    } else if (options.env === 'dev') {
-      mongoUri = process.env.MONGO_DEV_URI ?? `mongodb://root:12341234@localhost/${dbName}?authSource=admin`;
-    } else if (options.env === 'prod') {
-      mongoUri = process.env.MONGO_URI ?? '';
-    } else {
-      throw new Error(`Unknown environment: ${options.env ?? 'undefined'}`);
-    }
-
-    return {
-      global: true,
-      module: AppModule,
-      imports: [MongooseModule.forRoot(mongoUri), AuthModule, CallsHistoryModule, CirclesModule, AdminModule],
-      controllers: [],
-      providers: [
-        {
-          provide: RunOptions,
-          useValue: options ?? {},
-        },
-        {
-          provide: APP_INTERCEPTOR,
-          useClass: ValidationInterceptor,
-        },
-        {
-          provide: APP_FILTER,
-          useClass: HttpExceptionFilter,
-        },
-      ],
-      exports: [RunOptions],
-    };
-  }
-
-  constructor(@Inject(getConnectionToken()) private readonly connection: Connection) {}
-
-  async onModuleDestroy(): Promise<void> {
-    await MongoServerMemory.registerConnection(this.connection);
-    await MongoServerMemory.stop(); // will be trigger only if the memory database is used
-  }
-}
+@Module({
+  imports: [
+    FeatureConfigModule,
+    TypeOrmModule.forRootAsync({
+      inject: [mongoConfiguration.KEY, appConfiguration.KEY],
+      useFactory: async (config: MongoConfiguration, appConfig: AppConfiguration) => {
+        if (appConfig.env === 'test') {
+          return TestHelper.instance.getConfig();
+        }
+        return {
+          type: 'mongodb',
+          url: config.uri,
+          entities: [path.join(__dirname, '../../lib', '/**/*.entity.{ts,js}')],
+          synchronize: true,
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          logging: true,
+        };
+      },
+    }),
+    PermissionsModule,
+    AuthModule,
+    UsersModule,
+    CallsHistoryModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ValidationInterceptor,
+    },
+  ],
+})
+export class AppModule {}

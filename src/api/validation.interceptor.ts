@@ -13,7 +13,6 @@ export class ValidationInterceptor implements NestInterceptor {
     if (dtoResponse === undefined) {
       return dtoResponse;
     }
-    console.log(dtoResponse);
 
     if (typeof dtoResponse !== 'object') {
       return dtoResponse;

@@ -27,12 +27,7 @@ export class DocCommand extends CommandRunnerWithNestLogger {
       throw new Error('fileType should be yml or json');
     }
 
-    const app = await NestFactory.create(
-      AppModule.forModule({
-        env: 'test', // for using the memory database
-        jwtSecret: 'XXXX', // we will no use tokens
-      }),
-    );
+    const app = await NestFactory.create(AppModule);
 
     await generateOpenApiDocument(app);
 

@@ -4,5 +4,5 @@ import { PaginationTemplateDto } from 'lib/utils/dtos/pagination/pagination';
 
 export class CallDtoPagination extends PaginationTemplateDto<CallDto[]> {
   @ApiProperty({ type: [CallDto] })
-  data: CallDto[];
+  data: CallDto[] = [];
 }

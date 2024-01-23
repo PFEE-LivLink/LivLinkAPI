@@ -1,1 +1,1 @@
-export * from './IsFrenchPhoneNumber.validator';
+export * from './IsPhoneNumber.validator';
