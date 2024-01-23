@@ -23,7 +23,7 @@ export class RunCommand extends CommandRunnerWithNestLogger {
     const app = await NestFactory.create(AppModule);
     app.enableCors();
     app.useGlobalPipes(
-      new ValidationPipe({ transform: true, whitelist: true, transformOptions: { enableImplicitConversion: true } }),
+      new ValidationPipe({ transform: true, whitelist: false, transformOptions: { enableImplicitConversion: true } }),
     );
     const appConfig = app.get<AppConfiguration>(appConfiguration.KEY);
 

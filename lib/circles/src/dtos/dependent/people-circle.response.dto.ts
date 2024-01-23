@@ -1,4 +1,4 @@
-import { IsEnum, ValidateNested } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { SuccessTemplateDto } from 'lib/utils/dtos/template.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
@@ -22,7 +22,6 @@ export class PersonCircleDto {
 
   @Expose()
   @ApiProperty({ type: String })
-  @ValidateNested()
   phone: string;
 
   @Expose()
