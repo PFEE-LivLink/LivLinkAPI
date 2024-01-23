@@ -29,11 +29,7 @@
     "doc:generate": "se run doc:generate",
     "doc:generate:redoc": "se run doc:generate:redoc",
     "doc:generate:open-api-yml": "se run doc:generate:open-api-yml",
-<<<<<<< HEAD
     "oapi:gen": "openapi-generator-cli generate -i http://localhost:3000/docs/docs.json -g kotlin -o ./gen"
-=======
-    "gen": "openapi-generator-cli generate -i http://localhost:3000/docs/docs.json -g kotlin -o ./gen"
->>>>>>> b89985db224efcc2b427df51dc48742cf1151c2f
   },
   "dependencies": {
     "@faker-js/faker": "^8.3.1",
