@@ -19,6 +19,10 @@ export class UserCircles {
   @ValidateNested()
   persons: CirclePerson[];
 
+  @Column()
+  @IsArray()
+  personsUrgency: string[];
+
   constructor(data?: Partial<UserCircles>) {
     Object.assign(this, data);
   }

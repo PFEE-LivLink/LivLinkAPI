@@ -39,6 +39,14 @@ export class CirclesService {
     return persons;
   }
 
+  async getUsersInUrgencyCircle(user: User): Promise<string[]> {
+    const circlesDoc = await this.userCirclesRepo.findOne({ where: { phone: user.phone } });
+    if (!circlesDoc) {
+      return [];
+    }
+    return circlesDoc.personsUrgency;
+  }
+
   // async getUsersRequested(user: User): Promise<CirclePerson[]> {
   //   const circlesDoc = await this.userCirclesRepo.findOne({ where: { phone: user.phone } });
   //   if (!circlesDoc) {
@@ -54,6 +62,7 @@ export class CirclesService {
       return await this.userCirclesRepo.save({
         phone: user.phone,
         persons: [{ id: v4(), phone, type: newCircleType, status: 'Accepted' }],
+        personsUrgency: [],
       });
     }
     const personCircle = circlesDoc.persons.filter((personCircle) => personCircle.phone === phone);
@@ -63,6 +72,22 @@ export class CirclesService {
     }
     personCircle[0].type = newCircleType;
     personCircle[0].status = 'Accepted';
+    return await this.userCirclesRepo.save(circlesDoc);
+  }
+
+  async addPersonToUrgencyCircleHandler(user: User, phone: string) {
+    const circlesDoc = await this.userCirclesRepo.findOne({ where: { phone: user.phone } });
+    if (!circlesDoc) {
+      return await this.userCirclesRepo.save({
+        phone: user.phone,
+        persons: [],
+        personsUrgency: [phone],
+      });
+    }
+    if (circlesDoc.personsUrgency.includes(phone)) {
+      return circlesDoc;
+    }
+    circlesDoc.personsUrgency.push(phone);
     return await this.userCirclesRepo.save(circlesDoc);
   }
 

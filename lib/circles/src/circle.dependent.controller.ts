@@ -8,6 +8,7 @@ import { UsersService } from 'lib/users';
 import { OnlyForDependents } from 'lib/utils/decorators/OnlyForDependant';
 import { CirclesService } from './circles.service2';
 import { AuthStrategyValidateResult } from 'lib/authentification/auth.strategy';
+import { SendUrgencyCircleRequestRequestDto } from './dtos/dependent/send-urgency-circle.request.dto';
 
 const prefix = 'dependent-circles';
 
@@ -31,6 +32,17 @@ export class CircleDependentController {
         PersonCircleDto.from(circlePerson.id, circlePerson.phone, circlePerson.status, circlePerson.type),
       ),
     );
+  }
+
+  @Get('urgency')
+  @ApiOperation({
+    summary: 'Get all people in my urgency circles',
+    operationId: 'getPeopleInMyUrgencyCircles',
+  })
+  @ApiOkResponse({ type: [String], description: 'All people in my urgency circles' })
+  public async getPeopleInMyUrgencyCircles(@GetUser() user: AuthStrategyValidateResult): Promise<string[]> {
+    const circlePeople = await this.circlesService.getUsersInUrgencyCircle(user.livLinkUser!);
+    return circlePeople;
   }
 
   // @Get('requests')
@@ -73,5 +85,18 @@ export class CircleDependentController {
     @Body() dto: SendCircleRequestRequestDto,
   ): Promise<void> {
     await this.circlesService.addPersonToCircleHandler(user.livLinkUser!, dto.phone, dto.type);
+  }
+
+  @Post('add-urgency')
+  @ApiOperation({
+    summary: 'Add a person in urgency circles',
+    operationId: 'addInUrgencyCircle',
+  })
+  @ApiOkResponse({ description: '' })
+  public async addInUrgencyCircle(
+    @GetUser() user: AuthStrategyValidateResult,
+    @Body() dto: SendUrgencyCircleRequestRequestDto,
+  ): Promise<void> {
+    await this.circlesService.addPersonToUrgencyCircleHandler(user.livLinkUser!, dto.phone);
   }
 }
